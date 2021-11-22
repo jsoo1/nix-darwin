@@ -10,6 +10,7 @@
   ./security/pki
   ./security/sandbox
   ./security/sudo.nix
+  ./security/age
   ./system
   ./system/base.nix
   ./system/primary-user.nix
