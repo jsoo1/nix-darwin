@@ -133,6 +133,20 @@ in
       description = "Additional text appended to <filename>nix.conf</filename>.";
     };
 
+    nix.extraConfigFile = mkOption {
+      type = types.nullOr types.path;
+      default = null;
+      example = "/etc/nix.conf.secret";
+      description =
+        ''
+          An additional file concatenated onto the nix daemon
+          configuration.
+
+          NOTE: This changes the filetype of /etc/nix/nix.conf from a
+          link to the store to a regular file.
+        '';
+    };
+
     nix.distributedBuilds = mkOption {
       type = types.bool;
       default = false;
@@ -431,34 +445,36 @@ in
     environment.systemPackages = mkIf (isDerivation cfg.package)
       [ cfg.package ];
 
-    environment.etc."nix/nix.conf".source = nixConf;
+    environment.etc = lib.optionalAttrs (isNull cfg.extraConfigFile)
+      { "nix/nix.conf".source = nixConf; } // {
+        "nix/nix.conf".knownSha256Hashes = [
+          "c4ecc3d541c163c8fcc954ccae6b8cab28c973dc283fea5995c69aaabcdf785f"  # nix installer
+        ];
 
-    environment.etc."nix/nix.conf".knownSha256Hashes = [
-      "c4ecc3d541c163c8fcc954ccae6b8cab28c973dc283fea5995c69aaabcdf785f"  # nix installer
-    ];
+        "nix/registry.json".text = builtins.toJSON {
+          version = 2;
+          flakes = mapAttrsToList (n: v: { inherit (v) from to exact; }) cfg.registry;
+        };
 
-    environment.etc."nix/registry.json".text = builtins.toJSON {
-      version = 2;
-      flakes = mapAttrsToList (n: v: { inherit (v) from to exact; }) cfg.registry;
-    };
-
-    # List of machines for distributed Nix builds in the format
-    # expected by build-remote.
-    environment.etc."nix/machines" =
-      { enable = cfg.buildMachines != [];
-        text =
-          concatMapStrings (machine:
-            "${if machine ? sshUser then "${machine.sshUser}@" else ""}${machine.hostName} "
-            + machine.system or (concatStringsSep "," machine.systems)
-            + " ${machine.sshKey or "-"} ${toString machine.maxJobs or 1} "
-            + toString (machine.speedFactor or 1)
-            + " "
-            + concatStringsSep "," (machine.mandatoryFeatures or [] ++ machine.supportedFeatures or [])
-            + " "
-            + concatStringsSep "," machine.mandatoryFeatures or []
-            + "\n"
-          ) cfg.buildMachines;
+        # List of machines for distributed Nix builds in the format
+        # expected by build-remote.
+        "nix/machines" = {
+          enable = cfg.buildMachines != [];
+          text =
+            concatMapStrings (machine:
+              "${if machine ? sshUser then "${machine.sshUser}@" else ""}${machine.hostName} "
+              + machine.system or (concatStringsSep "," machine.systems)
+              + " ${machine.sshKey or "-"} ${toString machine.maxJobs or 1} "
+              + toString (machine.speedFactor or 1)
+              + " "
+              + concatStringsSep "," (machine.mandatoryFeatures or [] ++ machine.supportedFeatures or [])
+              + " "
+              + concatStringsSep "," machine.mandatoryFeatures or []
+              + "\n"
+            ) cfg.buildMachines;
+        };
       };
+
 
     environment.extraInit = ''
       # Set up secure multi-user builds: non-root users build through the
@@ -474,6 +490,9 @@ in
       };
 
     system.activationScripts.nix-daemon.text = mkIf cfg.useDaemon ''
+      ${lib.optionalString (!isNull cfg.extraConfigFile)
+        "cat ${nixConf} ${cfg.extraConfigFile} > /etc/nix/nix.conf"
+       }
       if ! diff /etc/nix/nix.conf /run/current-system/etc/nix/nix.conf &> /dev/null; then
           echo "reloading nix-daemon..." >&2
           launchctl kill HUP system/org.nixos.nix-daemon
