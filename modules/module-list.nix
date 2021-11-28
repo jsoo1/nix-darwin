@@ -69,6 +69,7 @@
   ./services/monitoring/telegraf.nix
   ./services/netbird.nix
   ./services/nix-daemon.nix
+  ./services/nix-serve.nix
   ./services/nix-gc
   ./services/ofborg
   ./services/postgresql
