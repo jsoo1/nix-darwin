@@ -60,6 +60,7 @@
   ./services/spotifyd.nix
   ./services/synapse-bt.nix
   ./services/synergy
+  ./services/telegraf.nix
   ./services/yabai
   ./services/nextdns
   ./programs/bash
