@@ -69,7 +69,6 @@
   ./services/redis
   ./services/skhd
   ./services/spacebar
-  ./services/spotifyd.nix
   ./services/synapse-bt.nix
   ./services/synergy
   ./services/tailscale.nix
