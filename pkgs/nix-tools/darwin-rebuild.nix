@@ -1,8 +1,9 @@
-#! @shell@
+{ pkgs, lib, ... }:
+
+pkgs.writeShellScriptBin "darwin-rebuild" ''
 set -e
 set -o pipefail
-export PATH=@path@:$PATH
-
+export PATH=${lib.makeBinPath [ pkgs.coreutils pkgs.jq]}:$PATH
 
 showSyntax() {
   echo "darwin-rebuild [--help] {edit | switch | activate | build | check | changelog}" >&2
@@ -22,7 +23,7 @@ origArgs=("$@")
 extraBuildFlags=()
 extraLockFlags=()
 extraProfileFlags=()
-profile=@profile@
+profile=/nix/var/nix/profiles/system
 action=
 flake=
 
@@ -116,23 +117,23 @@ flakeFlags=(--experimental-features 'nix-command flakes')
 
 if [ -n "$flake" ]; then
     if [[ $flake =~ ^(.*)\#([^\#\"]*)$ ]]; then
-       flake="${BASH_REMATCH[1]}"
-       flakeAttr="${BASH_REMATCH[2]}"
+       flake="''${BASH_REMATCH[1]}"
+       flakeAttr="''${BASH_REMATCH[2]}"
     fi
     if [ -z "$flakeAttr" ]; then
       flakeAttr=$(hostname)
     fi
-    flakeAttr=darwinConfigurations.${flakeAttr%.local}
+    flakeAttr=darwinConfigurations.''${flakeAttr%.local}
 fi
 
 if [ -n "$flake" ]; then
-    if nix "${flakeFlags[@]}" flake metadata --version &>/dev/null; then
+    if nix "''${flakeFlags[@]}" flake metadata --version &>/dev/null; then
         cmd=metadata
     else
         cmd=info
     fi
 
-    flake=$(nix "${flakeFlags[@]}" flake "$cmd" --json "${extraBuildFlags[@]}" "${extraLockFlags[@]}" -- "$flake" | jq -r .url)
+    flake=$(nix "''${flakeFlags[@]}" flake "$cmd" --json "''${extraBuildFlags[@]}" "''${extraLockFlags[@]}" -- "$flake" | jq -r .url)
 fi
 
 if [ "$action" != build ] && [ -z "$flake" ]; then
@@ -142,26 +143,26 @@ fi
 if [ "$action" = edit ]; then
   darwinConfig=$(nix-instantiate --find-file darwin-config)
   if [ -z "$flake" ]; then
-    exec "${EDITOR:-vi}" "$darwinConfig"
+    exec "''${EDITOR:-vi}" "$darwinConfig"
   else
-    exec nix "${flakeFlags[@]}" edit "${extraLockFlags[@]}" -- "$flake#$flakeAttr"
+    exec nix "''${flakeFlags[@]}" edit "''${extraLockFlags[@]}" -- "$flake#$flakeAttr"
   fi
 fi
 
 if [ "$action" = switch ] || [ "$action" = build ] || [ "$action" = check ]; then
   echo "building the system configuration..." >&2
   if [ -z "$flake" ]; then
-    systemConfig="$(nix-build '<darwin>' "${extraBuildFlags[@]}" -A system)"
+    systemConfig="$(nix-build '<darwin>' "''${extraBuildFlags[@]}" -A system)"
   else
-    systemConfig="$(nix "${flakeFlags[@]}" eval --raw "$flake#$flakeAttr.system" "${extraBuildFlags[@]}" "${extraLockFlags[@]}")"
+    systemConfig="$(nix "''${flakeFlags[@]}" eval --raw "$flake#$flakeAttr.system" "''${extraBuildFlags[@]}" "''${extraLockFlags[@]}")"
   fi
 fi
 
 if [ "$action" = list ] || [ "$action" = rollback ]; then
   if [ "$USER" != root ] && [ ! -w $(dirname "$profile") ]; then
-    sudo nix-env -p "$profile" "${extraProfileFlags[@]}"
+    sudo nix-env -p "$profile" "''${extraProfileFlags[@]}"
   else
-    nix-env -p "$profile" "${extraProfileFlags[@]}"
+    nix-env -p "$profile" "''${extraProfileFlags[@]}"
   fi
 fi
 
@@ -170,7 +171,7 @@ if [ "$action" = rollback ]; then
 fi
 
 if [ "$action" = activate ]; then
-  systemConfig=$(readlink -f "${0%*/sw/bin/darwin-rebuild}")
+  systemConfig=$(readlink -f "''${0%*/sw/bin/darwin-rebuild}")
 fi
 
 if [ -z "$systemConfig" ]; then exit 0; fi
@@ -205,3 +206,4 @@ if [ "$action" = check ]; then
   export checkActivation=1
   "$systemConfig/activate-user"
 fi
+''

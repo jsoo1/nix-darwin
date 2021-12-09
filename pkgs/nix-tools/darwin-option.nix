@@ -1,10 +1,11 @@
-#! @shell@
+{ pkgs, ... }:
+
+pkgs.writeShellScriptBin "darwin-option" ''
 set -e
 set -o pipefail
-export PATH=@path@:$PATH
 
 evalNix() {
-  nix-instantiate --eval --strict "${extraEvalFlags[@]}" -E "with import <darwin> {}; $*"
+  nix-instantiate --eval --strict "''${extraEvalFlags[@]}" -E "with import <darwin> {}; $*"
 }
 
 evalAttrs() {
@@ -40,7 +41,7 @@ while [ "$#" -gt 0 ]; do
       ;;
     -I)
       if [ -z "$1" ]; then
-        echo "$0: ‘$i’ requires an argument"
+        echo "$0:  $i  requires an argument"
         exit 1
       fi
       j="$1"; shift 1
@@ -75,3 +76,4 @@ else
   eval printf "$(evalAttrs "options.$option")" 2>/dev/null
   echo
 fi
+''

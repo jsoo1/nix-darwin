@@ -18,25 +18,33 @@
           let pkgs = import nixpkgs { inherit system; };
 
           in rec {
+            packages = pkgs.callPackage ./pkgs { nix-darwin = self; };
+
             defaultApp = apps.darwin-installer;
 
             apps = {
               darwin-installer = flake-utils.lib.mkApp {
-                drv = pkgs.callPackage ./pkgs/darwin-installer/default.nix {
-                  nix-darwin = self;
-                };
+                drv = packages.darwin-installer;
               };
 
               darwin-uninstaller = flake-utils.lib.mkApp {
-                drv = pkgs.callPackage ./pkgs/darwin-uninstaller/default.nix {
-                  nix-darwin = self;
-                };
+                drv = packages.darwin-uninstaller;
+              };
+
+              darwin-option = {
+                type = "app";
+                program = "${packages.nix-tools}/bin/darwin-option";
+              };
+
+              darwin-rebuild = {
+                type = "app";
+                program = "${packages.nix-tools}/bin/darwin-rebuild";
               };
             };
           });
 
     in {
-    inherit (portable) defaultApp apps;
+    inherit (portable) defaultApp apps packages;
 
     lib = {
       # TODO handle multiple architectures.
