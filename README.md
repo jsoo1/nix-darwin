@@ -13,6 +13,9 @@ Nix-darwin is built up around [Nixpkgs](https://github.com/NixOS/nixpkgs), quite
 
 To install nix-darwin, a working installation of [Nix](https://github.com/NixOS/nix#installation) is required.
 
+There is a plain nix installer and a flake installer app.
+
+### Plain Nix
 ```bash
 nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
 ./result/bin/darwin-installer
@@ -25,6 +28,11 @@ nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
 - `mv /etc/bashrc /etc/bashrc.orig`
 - `echo 'if test -e /etc/static/bashrc; then . /etc/static/bashrc; fi' | sudo tee -a /etc/bashrc`
 - `echo 'if test -e /etc/static/bashrc; then . /etc/static/bashrc; fi' | tee -a ~/.bashrc`
+
+### With Flakes
+``` bash
+nix run github:LnL7/nix-darwin
+```
 
 ## Updating
 
@@ -174,7 +182,7 @@ $
 
 ## Documentation
 
-Reference documentation of all the options is available [here](https://lnl7.github.io/nix-darwin/manual/index.html#sec-options).  
+Reference documentation of all the options is available [here](https://lnl7.github.io/nix-darwin/manual/index.html#sec-options).
 This can also be accessed locally using `man 5 configuration.nix`.
 
 `darwin-help` will open a HTML version of the manpage in the default browser.
