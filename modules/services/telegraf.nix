@@ -43,9 +43,12 @@ in {
 
   config = lib.mkIf config.services.telegraf.enable {
     launchd.daemons.telegraf = {
-      script = "${cfg.package}/bin/telegraf -config ${configFile}";
-
       serviceConfig = {
+        ProgramArguments = [
+          "${cfg.package}/bin/telegraf"
+          "-config"
+          "${configFile}"
+        ];
         Label = "org.nixos.telegraf";
         KeepAlive = true;
         StandardOutPath = "/var/log/telegraf.log";
