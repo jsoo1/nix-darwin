@@ -46,9 +46,11 @@ in {
       script = "${cfg.package}/bin/telegraf -config ${configFile}";
 
       serviceConfig = {
-        Label = "telegraf";
+        Label = "org.nixos.telegraf";
         RunAtLoad = true;
         KeepAlive.NetworkState = true;
+        StandardOutPath = "/var/log/telegraf.log";
+        StandardErrorPath = "/var/log/telegraf.log";
       };
     };
   };
