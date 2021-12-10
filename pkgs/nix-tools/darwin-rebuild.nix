@@ -155,7 +155,6 @@ if [ "$action" = switch ] || [ "$action" = build ] || [ "$action" = check ]; the
     systemConfig="$(nix-build '<darwin>' "''${extraBuildFlags[@]}" -A system)"
   else
     systemConfig="$(nix "''${flakeFlags[@]}" eval --raw "$flake#$flakeAttr.system" "''${extraBuildFlags[@]}" "''${extraLockFlags[@]}")"
-    nix "''${flakeFlags[@]}" build --no-link "$flake#$flakeAttr.system" "''${extraBuildFlags[@]}" "''${extraLockFlags[@]}"
   fi
 fi
 
