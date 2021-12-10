@@ -47,8 +47,7 @@ in {
 
       serviceConfig = {
         Label = "org.nixos.telegraf";
-        RunAtLoad = true;
-        KeepAlive.NetworkState = true;
+        KeepAlive = true;
         StandardOutPath = "/var/log/telegraf.log";
         StandardErrorPath = "/var/log/telegraf.log";
       };
