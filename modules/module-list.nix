@@ -60,6 +60,7 @@
   ./services/spacebar
   ./services/synapse-bt.nix
   ./services/synergy
+  ./services/system/self-deploy.nix
   ./services/telegraf.nix
   ./services/yabai
   ./services/nextdns
