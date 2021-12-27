@@ -1,9 +1,9 @@
-{ config, lib, ... }:
+{ lib, ... }:
 
 with lib;
 
 let
-  launchdTypes = import ./types.nix { inherit config lib; };
+  launchdTypes = import ./types.nix { inherit lib; };
 in
 
 {
