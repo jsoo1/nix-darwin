@@ -72,6 +72,7 @@
   ./services/spacebar
   ./services/synapse-bt.nix
   ./services/synergy
+  ./services/system/self-deploy.nix
   ./services/tailscale.nix
   ./services/telegraf.nix
   ./services/wg-quick.nix
