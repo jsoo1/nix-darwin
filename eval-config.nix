@@ -24,6 +24,10 @@ let
       # This permits the configuration to override the passed-in
       # system.
       nixpkgs.system = lib.mkDefault system;
+      nixpkgs.overlays = [(_: pkgs: import ./pkgs {
+        inherit pkgs;
+        nix-darwin = inputs.darwin;
+      })];
     };
   };
 
