@@ -41,10 +41,15 @@
                 program = "${packages.nix-tools}/bin/darwin-rebuild";
               };
             };
+
+            checks.simple = (self.lib.darwinSystem {
+              inherit system;
+              modules = [ self.darwinModules.simple ];
+            }).system;
           });
 
     in {
-    inherit (portable) defaultApp apps packages;
+    inherit (portable) defaultApp apps packages checks;
 
     lib = {
       # TODO handle multiple architectures.
@@ -67,11 +72,6 @@
     darwinModules.lnl = ./modules/examples/lnl.nix;
     darwinModules.ofborg = ./modules/examples/ofborg.nix;
     darwinModules.simple = ./modules/examples/simple.nix;
-
-    checks.x86_64-darwin.simple = (self.lib.darwinSystem {
-      system = "x86_64-darwin";
-      modules = [ self.darwinModules.simple ];
-    }).system;
 
   };
 }
