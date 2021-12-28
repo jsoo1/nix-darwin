@@ -21,7 +21,7 @@ in
     system.activationScripts = mkOption {
       internal = true;
       type = types.attrsOf (types.submodule script);
-      default = {};
+      default = { };
       description = ''
         A set of shell script fragments that are executed when a NixOS
         system configuration is activated.  Examples are updating
@@ -70,6 +70,7 @@ in
       ${cfg.activationScripts.keyboard.text}
       ${cfg.activationScripts.fonts.text}
       ${cfg.activationScripts.nvram.text}
+      ${cfg.activationScripts.system-crontabs.text}
 
       ${cfg.activationScripts.postActivation.text}
 
