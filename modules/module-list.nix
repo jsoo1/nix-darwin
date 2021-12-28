@@ -67,6 +67,7 @@
   ./services/postgresql
   ./services/privoxy
   ./services/redis
+  ./services/scheduling/cron.nix
   ./services/skhd
   ./services/spacebar
   ./services/synapse-bt.nix
