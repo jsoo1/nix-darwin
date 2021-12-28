@@ -3,7 +3,7 @@
 pkgs.writeShellScriptBin "darwin-rebuild" ''
 set -e
 set -o pipefail
-export PATH=${lib.makeBinPath [ pkgs.coreutils pkgs.jq]}:$PATH
+export PATH=${lib.makeBinPath [ pkgs.coreutils pkgs.git pkgs.hostname pkgs.jq]}:$PATH
 
 showSyntax() {
   echo "darwin-rebuild [--help] {edit | switch | activate | build | check | changelog}" >&2
