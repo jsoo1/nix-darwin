@@ -9,6 +9,8 @@ let
     "${pkgs.nix-tools}/bin/darwin-rebuild"
     "--flake"
     cfg.flake
+    "--no-write-lock-file"
+    "--recreate-lock-file"
     cfg.switchCommand
     (lib.optionalString (!isNull cfg.logFile) "> ${cfg.logFile} 2>&1")
   ];
