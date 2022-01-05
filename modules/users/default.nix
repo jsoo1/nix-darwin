@@ -80,6 +80,8 @@ in
     };
   };
 
+  imports = [ ./openssh ];
+
   config = {
 
     users.gids = mkMerge gids;
