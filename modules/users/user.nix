@@ -74,6 +74,11 @@ with lib;
         which adds packages to all users.
       '';
     };
+
+    openssh = mkOption {
+      type = types.submodule (import ./openssh/options.nix lib);
+      description = "User specific ssh options.";
+    };
   };
 
   config = {
