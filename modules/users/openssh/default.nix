@@ -8,11 +8,8 @@ let
     ${lib.concatStringsSep "\n" userEtcFiles}
   '';
 
-  userEtcFiles = builtins.attrValues (lib.mapAttrs mkUserEtcFiles
+  userEtcFiles = builtins.attrValues (lib.mapAttrs mkUserAuthorizedKeys
     (lib.filterAttrs (_: hasAuthorizedKeys) users));
-
-  mkUserEtcFiles = name: user:
-    mkUserAuthorizedKeys name user.openssh.authorizedKeys.keyFiles;
 
   hasAuthorizedKeys = user:
     user ? openssh
@@ -20,15 +17,15 @@ let
     && user.openssh.authorizedKeys ? keyFiles
     && user.openssh.authorizedKeys.keyFiles != { };
 
-  mkUserAuthorizedKeys = userName: keyFiles:
+  mkUserAuthorizedKeys = name: user:
     let
-      mkStoreKeyFile = path: ''"${builtins.path { inherit path; }}"'';
+      mkStoreKeyFile = path: "${builtins.path { inherit path; }}";
 
-      keys = builtins.map mkStoreKeyFile keyFiles;
+      keys = builtins.map mkStoreKeyFile user.openssh.authorizedKeys.keyFiles;
     in
     ''
-      cat ${lib.concatStringsSep " " keys} > "$out/${userName}"
-      chmod 444 "$out/${userName}"
+      cat ${lib.concatStringsSep " " keys} > "$out/${name}"
+      chmod 444 "$out/${name}"
     '';
 in
 
