@@ -39,9 +39,11 @@ in
         "AuthorizedKeysFile .ssh/authorized_keys /etc/ssh/authorized_keys.d/%u";
 
     system.activationScripts.extraActivation.text = ''
-      rm -rf /etc/ssh/authorized_keys.d
-      mkdir -p /etc/ssh/authorized_keys.d
-      cp ${etcAuthorizedKeysDir}/* /etc/ssh/authorized_keys.d
+      rm -rf /etc/ssh/authorized_keys.d > /dev/null 2>&1 || true
+      ${lib.optionalString (builtins.any hasAuthorizedKeys (builtins.attrValues users)) ''
+        mkdir -p /etc/ssh/authorized_keys.d
+        cp ${etcAuthorizedKeysDir}/* /etc/ssh/authorized_keys.d
+      ''}
     '';
   };
 }
