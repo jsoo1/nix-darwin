@@ -48,11 +48,7 @@ in
         "/bin/sh" "-c"
         "/bin/wait4path ${config.nix.package}/bin/nix-daemon &amp;&amp; exec ${config.nix.package}/bin/nix-daemon"
       ];
-      serviceConfig.ProcessType = mkDefault "Interactive";
-      serviceConfig.LowPriorityIO = config.nix.daemonIONice;
-      serviceConfig.Nice = config.nix.daemonNiceLevel;
       serviceConfig.Label = "org.nixos.nix-daemon"; # must match daemon installed by Nix regardless of the launchd label Prefix
-      serviceConfig.SoftResourceLimits.NumberOfFiles = mkDefault 4096;
       serviceConfig.StandardErrorPath = cfg.logFile;
 
       serviceConfig.KeepAlive = mkIf (!cfg.enableSocketListener) true;
