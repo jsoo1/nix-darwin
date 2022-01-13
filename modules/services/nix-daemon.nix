@@ -48,8 +48,6 @@ in
         "/bin/sh" "-c"
         "/bin/wait4path ${config.nix.package}/bin/nix-daemon &amp;&amp; exec ${config.nix.package}/bin/nix-daemon"
       ];
-      serviceConfig.ProcessType = config.nix.daemonProcessType;
-      serviceConfig.LowPriorityIO = config.nix.daemonIOLowPriority;
       serviceConfig.Label = "org.nixos.nix-daemon"; # must match daemon installed by Nix regardless of the launchd label Prefix
       serviceConfig.SoftResourceLimits.NumberOfFiles = mkDefault 1048576;
       serviceConfig.StandardErrorPath = cfg.logFile;
