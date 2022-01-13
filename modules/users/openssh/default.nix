@@ -35,12 +35,14 @@ in
       lib.mkIf (builtins.any hasAuthorizedKeys (builtins.attrValues users))
         "AuthorizedKeysFile .ssh/authorized_keys /etc/ssh/authorized_keys.d/%u";
 
-    system.activationScripts.extraActivation.text = ''
-      rm -rf /etc/ssh/authorized_keys.d > /dev/null 2>&1 || true
-      ${lib.optionalString (builtins.any hasAuthorizedKeys (builtins.attrValues users)) ''
+    system.activationScripts.extraActivation.text = lib.mkMerge [
+      ''
+        rm -rf /etc/ssh/authorized_keys.d > /dev/null 2>&1 || true
+      ''
+      (lib.mkIf (builtins.any hasAuthorizedKeys (builtins.attrValues users)) ''
         mkdir -p /etc/ssh/authorized_keys.d
         cp ${etcAuthorizedKeysDir}/* /etc/ssh/authorized_keys.d
-      ''}
-    '';
+      '')
+    ];
   };
 }
