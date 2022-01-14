@@ -77,6 +77,7 @@ with lib;
 
     openssh = mkOption {
       type = types.submodule (import ./openssh/options.nix lib);
+      default = {};
       description = "User specific ssh options.";
     };
   };
