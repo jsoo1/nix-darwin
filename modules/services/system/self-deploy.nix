@@ -33,12 +33,12 @@ let
 
     ${gitWithRepo} checkout FETCH_HEAD
 
-    systemConfig="$(nix-build ${lib.cli.toGNUCommandLineShell { } {
+    systemConfig="$(${config.nix.package}/bin/nix-build ${lib.cli.toGNUCommandLineShell { } {
       attr = cfg.input.nixAttribute;
       no-out-link = true;
     }} ${lib.escapeShellArg "${repositoryDirectory}${cfg.input.nixFile}"})"
 
-    nix-env --profile /nix/var/nix/profiles/system --set $systemConfig
+    ${config.nix.package}/bin/nix-env --profile /nix/var/nix/profiles/system --set $systemConfig
 
     $systemConfig/activate-user
 
