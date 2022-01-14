@@ -89,10 +89,14 @@ in
 
   config = mkMerge [
 
-    { services.cron.enable = mkDefault (allFiles != [ ]); }
+    {
+      services.cron.enable = mkDefault (allFiles != [ ]);
+      system.activationScripts.system-crontabs.text = mkDefault ''
+        echo 'reloading system crontabs'
+      '';
+    }
     (mkIf config.services.cron.enable {
       system.activationScripts.system-crontabs.text = ''
-        echo 'reloading system crontabs'
         cat ${crontabs} | crontab -u root -
       '';
     })
