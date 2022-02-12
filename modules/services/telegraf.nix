@@ -45,9 +45,8 @@ in {
     launchd.daemons.telegraf = {
       serviceConfig = {
         ProgramArguments = [
-          "${cfg.package}/bin/telegraf"
-          "-config"
-          "${configFile}"
+          "/bin/sh" "-c"
+          "/bin/wait4path ${cfg.package}/bin/telegraf &amp;&amp; ${cfg.package}/bin/telegraf -config ${configFile}"
         ];
         Label = "org.nixos.telegraf";
         KeepAlive = true;
