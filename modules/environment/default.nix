@@ -32,6 +32,21 @@ in
       '';
     };
 
+    environment.defaultPackages = mkOption {
+      type = types.listOf types.package;
+      default = [];
+      example = literalExpression "[]";
+      description = ''
+        Set of packages users expect from a minimal linux istall.
+        Like systemPackages, they appear in
+        /run/current-system/sw.  These packages are
+        automatically available to all users, and are
+        automatically updated every time you rebuild the system
+        configuration.
+        If you want a more minimal system, set it to an empty list.
+      '';
+    };
+
     environment.systemPath = mkOption {
       type = types.listOf (types.either types.path types.str);
       description = lib.mdDoc "The set of paths that are added to PATH.";
@@ -184,7 +199,7 @@ in
 
     system.path = pkgs.buildEnv {
       name = "system-path";
-      paths = cfg.systemPackages;
+      paths = cfg.systemPackages ++ cfg.defaultPackages;
       inherit (cfg) postBuild pathsToLink extraOutputsToInstall;
     };
 
