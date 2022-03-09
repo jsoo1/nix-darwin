@@ -20,6 +20,7 @@ let
   ];
 
   script = pkgs.writeShellScript "self-deploy" ''
+    set -e
     ${lib.optionalString (builtins.isString cfg.input.sshKeyFile)
       ''export GIT_SSH_COMMAND="${pkgs.openssh}/bin/ssh -i ${lib.escapeShellArg cfg.input.sshKeyFile}"''}
     export PATH=${pkgs.gnutar}/bin:${pkgs.gzip}/bin:$PATH
