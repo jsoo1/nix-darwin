@@ -37,6 +37,7 @@ let
           require-sigs = ${if cfg.requireSignedBinaryCaches then "true" else "false"}
           trusted-users = ${toString cfg.trustedUsers}
           allowed-users = ${toString cfg.allowedUsers}
+          system-features = ${toString cfg.systemFeatures}
           $extraOptions
           END
         '';
@@ -121,6 +122,15 @@ in
           Directories from the host filesystem to be included
           in the sandbox.
         '';
+    };
+
+    nix.systemFeatures = mkOption {
+      type = types.listOf types.str;
+      default = [ "nixos-test" "benchmark" "big-parallel" ];
+      example = [ "benchmark" "big-parallel" "nixos-test" "local" ];
+      description = ''
+        The supported features of a machine
+      '';
     };
 
     nix.extraOptions = mkOption {
