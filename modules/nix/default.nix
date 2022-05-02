@@ -88,7 +88,7 @@ let
     requireSignedBinaryCaches = "require-sigs";
     trustedUsers = "trusted-users";
     allowedUsers = "allowed-users";
-    # systemFeatures = "system-features";
+    systemFeatures = "system-features";
   };
 
   semanticConfType = with types;
