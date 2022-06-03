@@ -26,7 +26,9 @@ in {
       extraConfig = lib.mkOption {
         default = {};
         description = "Extra configuration options for telegraf";
-        type = lib.types.attrs;
+        type = lib.types.attrsOf (lib.types.either
+          lib.types.attrs
+          (lib.types.attrsOf (lib.types.listOf lib.types.attrs)));
         example = {
           outputs.influxdb = [{
             urls = ["http://localhost:8086"];
