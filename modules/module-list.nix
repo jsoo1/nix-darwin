@@ -80,7 +80,6 @@
   ./services/lorri.nix
   ./services/mail/offlineimap.nix
   ./services/mopidy.nix
-  ./services/monitoring/telegraf.nix
   ./services/monitoring/netdata.nix
   ./services/monitoring/prometheus-node-exporter.nix
   ./services/netbird.nix
