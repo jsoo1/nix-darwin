@@ -11,7 +11,7 @@ let
     ++ map pkgs.copyPathToStore cfg.knownHostsFiles;
 
   host =
-    { name, ... }:
+    { name, config, ... }:
     {
       options = {
         certAuthority = lib.mkOption {
@@ -28,6 +28,15 @@ let
           description = ''
             A list of host names and/or IP numbers used for accessing
             the host's ssh service.
+          '';
+        };
+        extraHostNames = mkOption {
+          type = types.listOf types.str;
+          default = [ ];
+          description = ''
+            A list of additional host names and/or IP numbers used for
+            accessing the host's ssh service. This list is ignored if
+            `hostNames` is set explicitly.
           '';
         };
         publicKey = mkOption {
@@ -55,7 +64,7 @@ let
         };
       };
       config = {
-        hostNames = mkDefault [ name ];
+        hostNames = mkDefault ([ name ] ++ config.extraHostNames);
       };
     };
   # Taken from: https://github.com/NixOS/nixpkgs/blob/f4aa6afa5f934ece2d1eb3157e392d056be01617/nixos/modules/services/networking/ssh/sshd.nix#L46-L93
@@ -148,7 +157,8 @@ in
       example = literalExpression ''
         [
           {
-            hostNames = [ "myhost" "myhost.mydomain.com" "10.10.1.4" ];
+            hostNames = [ "myhost" ];
+            extraHostNames = [ "myhost.mydomain.com" "10.10.1.4" ]
             publicKeyFile = ./pubkeys/myhost_ssh_host_dsa_key.pub;
           }
           {
