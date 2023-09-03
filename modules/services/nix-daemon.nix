@@ -49,6 +49,7 @@ in
         "/bin/wait4path ${config.nix.package}/bin/nix-daemon &amp;&amp; exec ${config.nix.package}/bin/nix-daemon"
       ];
       serviceConfig.Label = "org.nixos.nix-daemon"; # must match daemon installed by Nix regardless of the launchd label Prefix
+      serviceConfig.SoftResourceLimits.NumberOfFiles = mkDefault 32768;
       serviceConfig.StandardErrorPath = cfg.logFile;
 
       serviceConfig.KeepAlive = mkIf (!cfg.enableSocketListener) true;
