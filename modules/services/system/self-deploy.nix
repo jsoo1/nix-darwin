@@ -8,8 +8,6 @@ let
     then darwinRebuild
     else script;
 
-  launchd = import ../../launchd/launchd.nix { inherit lib; };
-
   darwinRebuild = lib.concatStringsSep " " [
     "${pkgs.nix-tools}/bin/darwin-rebuild"
     "--flake"
@@ -146,6 +144,14 @@ in
       description = "Path to the log file for `self-deploy`.";
     };
 
+    failureHook = lib.mkOption {
+      type = lib.types.nullOr lib.types.lines;
+      default = null;
+      description = ''
+        Commands to run on failure.
+      '';
+    };
+
     switchCommand = lib.mkOption {
       type = lib.types.enum [ "boot" "switch" "dry-activate" "test" ];
 
@@ -173,6 +179,22 @@ in
   config = lib.mkIf cfg.enable {
     # Avoid launchdaemon unloading before activation is complete.
     services.cron.enable = true;
-    services.cron.systemCronJobs = [ "${cfg.interval} ${cmd} ${lib.optionalString (!isNull cfg.logFile) "> ${cfg.logFile} 2>&1"}" ];
+    services.cron.systemCronJobs =
+      let
+        log = lib.optionalString (cfg.logFile != null) "> ${cfg.logFile} 2>&1";
+
+        script = pkgs.writeShellApplication {
+          name = "self-deploy-cron-cmd";
+          runtimeInputs = [ pkgs.coreutils ];
+          text =  ''
+            if ! (${cmd} ${log}); then
+              ${lib.optionalString (cfg.failureHook != null)
+                cfg.failureHook}
+              exit
+            fi
+          '';
+        };
+      in
+        [ "${cfg.interval} ${lib.getExe script}" ];
   };
 }
