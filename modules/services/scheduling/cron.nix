@@ -96,8 +96,18 @@ in
       '';
     }
     (mkIf config.services.cron.enable {
+      system.activationScripts.system-crontabs.text = lib.mkMerge [
+        (lib.mkIf (config.services.cron.systemCronJobs != [ ]) ''
+          cat ${crontabs} | crontab -u root -
+        '')
+        (lib.mkIf (config.services.cron.systemCronJobs == [ ]) ''
+          crontab -u root -r
+        '')
+      ];
+    })
+    (mkIf (!config.services.cron.enable) {
       system.activationScripts.system-crontabs.text = ''
-        cat ${crontabs} | crontab -u root -
+        crontab -u root -r
       '';
     })
   ];
