@@ -101,13 +101,13 @@ in
           cat ${crontabs} | crontab -u root -
         '')
         (lib.mkIf (config.services.cron.systemCronJobs == [ ]) ''
-          crontab -u root -r
+          crontab -u root -r || :
         '')
       ];
     })
     (mkIf (!config.services.cron.enable) {
       system.activationScripts.system-crontabs.text = ''
-        crontab -u root -r
+        crontab -u root -r || :
       '';
     })
   ];
