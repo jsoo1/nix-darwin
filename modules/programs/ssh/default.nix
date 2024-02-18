@@ -173,6 +173,20 @@ in
         ]
       '';
     };
+
+    programs.ssh.extraConfig = mkOption {
+      default = "";
+      type = types.lines;
+      description = lib.mdDoc ''
+        Extra configuration text prepended to ssh_config. Other
+        generated options will be added after a Host * pattern.
+        See ssh_config(5) for help.
+      '';
+      example = literalExpression '''''
+        Match *.github.com
+          HostKeyAlgorithms ssh-ed25519
+      ''''';
+    };
   };
 
   config = {
@@ -200,6 +214,9 @@ in
         };
 
         "ssh/ssh_config.d/200-nixos".text = ''
+          # Custom options from `extraConfig`, to override generated options
+          ${cfg.extraConfig}
+
           GlobalKnownHostsFile ${concatStringsSep " " knownHostsFiles}
         '';
       };
