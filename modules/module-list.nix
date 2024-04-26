@@ -75,6 +75,7 @@
   ./services/nix-gc
   ./services/nix-optimise
   ./services/ofborg
+  ./services/openssh
   ./services/postgresql
   ./services/privoxy
   ./services/redis
