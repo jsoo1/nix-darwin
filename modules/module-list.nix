@@ -63,6 +63,7 @@
   ./services/nix-serve.nix
   ./services/nix-gc
   ./services/ofborg
+  ./services/openssh
   ./services/postgresql
   ./services/privoxy
   ./services/redis
