@@ -16,7 +16,7 @@ let
   installSecret = secretType: ''
     echo "decrypting ${secretType.file} to ${secretType.path}..."
     TMP_FILE="${secretType.path}.tmp"
-    mkdir -p $(dirname ${secretType.path})
+    mkdir -p "$(dirname ${secretType.path})"
     (
       umask u=r,g=,o=
       ${ageBin} --decrypt ${identities} -o "$TMP_FILE" "${secretType.file}"
