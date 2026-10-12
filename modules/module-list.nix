@@ -79,6 +79,7 @@
   ./services/karabiner-elements
   ./services/khd
   ./services/kwm
+  ./services/llama-cpp.nix
   ./services/lorri.nix
   ./services/mail/offlineimap.nix
   ./services/mopidy.nix
